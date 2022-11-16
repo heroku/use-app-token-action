@@ -2,7 +2,7 @@ name: Use GitHub App Token
 on:
   push:
     branches:
-      - main
+      - "**"
     pull_request:
       branches:
         - main

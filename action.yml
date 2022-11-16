@@ -1,0 +1,40 @@
+name: Use GitHub App Token
+author: Lennox McKenzie
+description: Creates a new GitHub app token given the supplied app id and private key
+
+inputs:
+  app_id:
+    description: GitHub app ID
+    required: true
+  private_key:
+    description: GitHub access key
+    required: true
+
+outputs:
+  app_token:
+    description: Generated GitHub app token
+    value: ${{ steps.get_app_token.outputs.app_token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup ruby
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+        cache: npm
+        cache-dependency-path: package-lock.json
+    - name: Install dependencies
+      run: npm ci
+      shell: bash
+    - name: Build the project
+      run: npm run build
+      shell: bash
+    - name: Run the action
+      id: get_app_token
+      run: node dist/index.js
+      env:
+        APP_ID: ${{ inputs.app_id }}
+        PRIVATE_KEY: ${{ inputs.private_key }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+      shell: bash

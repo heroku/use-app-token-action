@@ -5,6 +5,8 @@ import {AppTokenService} from "./services/app-token-service";
     const appTokenSvc = new AppTokenService();
 
     try {
+        console.info("Starting execution: Use GitHub App Token Action");
+
         const appToken = await appTokenSvc.getToken();
 
         setSecret(appToken);

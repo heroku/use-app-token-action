@@ -25,14 +25,14 @@ runs:
         cache: npm
         cache-dependency-path: package-lock.json
     - name: Install dependencies
-      run: npm ci
+      run: npm --prefix ${{ github.action_path }} ci
       shell: bash
     - name: Build the project
-      run: npm run build
+      run: npm --prefix ${{ github.action_path }} run build
       shell: bash
     - name: Run the action
       id: get_app_token
-      run: node dist/index.js
+      run: node ${{ github.action_path }}/dist/index.js
       env:
         APP_ID: ${{ inputs.app_id }}
         PRIVATE_KEY: ${{ inputs.private_key }}

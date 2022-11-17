@@ -36,5 +36,5 @@ runs:
       env:
         APP_ID: ${{ inputs.app_id }}
         PRIVATE_KEY: ${{ inputs.private_key }}
-        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_REPOSITORY: heroku/use-app-token-action
       shell: bash

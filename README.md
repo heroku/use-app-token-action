@@ -18,6 +18,8 @@ and RSA `private_key`.
     private_key: ""
 ```
 
+Returns: `steps.<step_id>.outputs.app_token`
+
 - In your workflow YAML file, include this action similar to the following: \
   `.github/workflows/sample.yml`
   ```yaml

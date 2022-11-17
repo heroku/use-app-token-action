@@ -18,7 +18,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Setup ruby
+    - name: Setup node
       uses: actions/setup-node@v3
       with:
         node-version: 16.x

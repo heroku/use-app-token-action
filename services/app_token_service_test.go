@@ -1,0 +1,113 @@
+package services_test
+
+import (
+	"encoding/base64"
+	"errors"
+	"github.com/google/go-github/v48/github"
+	mocks "github.com/heroku/use-app-token-action/mocks/services"
+	"github.com/heroku/use-app-token-action/services"
+	"github.com/stretchr/testify/suite"
+	"testing"
+	"time"
+)
+
+type AppTokenServiceTestSuite struct {
+	suite.Suite
+	ghApiOpsProvider *mocks.GitHubApiOperationsProvider
+	appTokenSvc      services.IAppTokenService
+	appId            string
+	privateKey       string
+	now              time.Time
+}
+
+func TestAppTokenService(t *testing.T) {
+	suite.Run(t, new(AppTokenServiceTestSuite))
+}
+
+func (ts *AppTokenServiceTestSuite) SetupTest() {
+	b64PrivateKey := "LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlKS2dJQkFBS0NBZ0VBdU9mOXBaVjhaaU5tMElFQUs3dWEwMjFNYm5PeXRUU1AwZUZDcVNuUW5SZjRuT3VrClZTOCtEV2FlSTFmeG9OcnUyM1VML0xHUUlnUWZSWnYvMXpvYjJXekFDUVZpdzMyWmorL0tOUk5mKzAzbG9BNFUKVXJnN0RmNmMzMERFMGFMTlNsSlVyV3NIZTBMVHBTc1FlRDNNMUhpYUxuNUJiYi82L1BIdGVjMlRWdzRGWWlxegp6U1MwaDlPdVhNamZZZUNmZjgrZDlqUHNjbHpGUk84YmMvMENHSHpSblhXSEtxcUU1bEJtWE43dnZld1JUVFpPCmdycjhxa3p5T2JsZmNtcklvcTNrbWFYeEZlbk9aSk1sOHp2Q0gvejlJbzlWWUN4UDAyYmpicTNxcXRqNDJTNXcKT0NYTjZVZVFSRmVTU1dCaDZYOUl1b3A2ZzJHdVJzRk53b1p1UGY0WE5Da0oxRFoyaVp0dUN5RHVlQVFTYUdndApXclBaMFpSbHRiUWFXUEtENGlabEtvaEFDOFE4eEpuakFrTWhXbi9XR2NWOWZMRlU5KzJsdTNwVGh6T0UxUWNZCmJSVmIvY01HN0t0MkVtUGVBbGU1NG5Ba3RtcXd2enptblhvS2hJSFVvRnIvbnorWTE3WUxXOVVlZWxCSWdlZTUKUXVwYm9UUWZFUDNlU2NYdCtrbElXdnowRnA3SE5CamdXZ2duR09oZW1PWDh4WG53U2srSUY2T2ZsZ2ZLdGdvRApWdk5TV1Q1aEI0T2lRNXdtQURRdzhSQmEwNFdFcnZ4MnZkOC9mT0lXMjN3UHQ3UkJDeEZ1SUVPSUlLU0VTdjN4Ckt6T051T2ZTYlFlWndTbXpKRldBWDVCM2xBV01rVlhyZ21iMzBPd3dBVXRBd0lRR1d3ci9PRUJGK3JjQ0F3RUEKQVFLQ0FnQWo0VGh4NGhEeWpOb05pWXFyOGNwNFRsUXZkcG50MlpZeXhzQTFyUnlDN3p6WnprdmtEN2U5eC9UVgpyT0lCTVpwNTBUdVRQQzFZdkc0SkJ0MWRPVFJnTzE4RUlSeHFETHc0bHZJbzNHcWFqQ0lMcmMrNXdYQU1KaVR3Cm1WUFh6ZnlCK0huZjhNM1IyRVRUWHdqaUhEUGI0czhnU0hXUHcxb0RyVHBFa1dTTzF2U3FlTmpNN050dkk5OUkKdDkzSTAxcC81WnlrUXEwVi8vUnpqT1pKMm9XR2xPbmo0UU5xZnc0czF0c1dHRmh6QlJUU1k4QldVOHhsaTJyUgpVcXczdW9yV0xtSVdnb0hHbThqbDhUdkMrQXlTUW5nb05hSCtlSHJBN2MwaUUvTmVWWjNzSHJ1OTJYQWNYVHVjClYxWFdrVEpPcWRsR0FVc0dwWFM0M0JlbnNJaEJnRUZBaWUwLzVDdjBQTll3blNjZnpYWVlYR3R0Y2p5R2JBRnIKa1c0WmdsbUY1M3dyNldZVCswMGg1RGw0RHcyRjNVNmRlejNBd0Jaci9lbzFaZTlVWGJsS2w0bGNneVFiWVNURQpmc3hKY0pNOUE2YytrVm1IT0NnRWkyVDBZam1nZXY2VVZxdzV2aFc5RWVwaHJ1aXFGckR1T3B1c2ttNTFIaVpJCi9BTUc5dDFobXRXNmZ1Q3dVTHZwVUxOTWdxQjlsWjZQZUthTkVyaUZrK3Bmb0VRMWw2OUVKbkZxLzRTSFV4YXEKVkcyVUw1WFFZKy9oN2hIc2E3WDlRQTMreTZqaHhhWW01bmN2b1pwV0NramQ5L3l6WStSaE5LWS9lYU42UHBzaQppZVFsTjFkUmk5WnFBTmNLa1pCVk1YSVdiTTJYVndMbUJ4b2RsR3Y2c3lVdktWT2prUUtDQVFFQTlKK1F3RFlECnZXVEx3VWltbURwNFZaK2ExWWpmYjdVMEJNV09CM1Q4SmJqSFh2SFlpVGk3Z1FmL2lNMHNTOS90U3lnNHZBdTkKWk10SnpMbVBxWEptdHRUdk5oK3F1aU9lRjBhZkd5RHZVbXpMVjdGOWFFYXdNZnFlaVJqRHlVZjRtUHlSbTF2ZApZaWJHbFNGUmYvc3BqVU5QVFpJMllCUzNXcWdQY0xMK3pEcDlya0E1Y0N5Q203bkg0VS9Xek5HTFJiV0xqUVJoCmVEZnltTG9QWHRkem53MzgrMXQyNi9VVEpsRXZZWiswS3NpMENVVjlQU1N2ZnlYNllmaExWdi9DMGFpaUVnWXYKZlVHbXBMQkttNG45V0ttRzBnVTMzM1hVZHU3Z0F1QUpnQjRZU0hhYmhxMXZTRGxOeGxGN2d0bWVaT1FWc1RlOQo0OVI3Q2hzbExDczgyUUtDQVFFQXdZRnlMODFHak5jeG0xN1dFRFQvQVY1QTJadGRkYW9yRnBCU0lma3Y4S3BUCnRVVmxBaEdJUE9jcHB0Nk5PVVdpc2k3MTFhbnpyb3pIV0dzYnBmSkt6T1RmKzE0WVozekVUR1BQZVpHK3g5VFUKT01hTEVNTlhBditYRDhVOUxBVGN5Qkg4a000QXZ4Nkt6Zko3cm9mWThBMUtzQVFvdmF0dkxwR1RYdjFMaW8yeApPUEwzbXhhMUdSYysxSnhPREdQSUF3Q095Rm9oUkw0bmcwV0pVQW0rSHZZdHdvSzVzNWN4U1dicnFGZkgyR1I4CkVDNVBBZHRjdlczRGowR1RYei9oRVFRUW5naGMwVkduSC9jdWIwL1I2ckJvNFFibkhJM2NFS01jTDdDOHIyM3YKaXY3bUEzS1diTFJXbHJqanZ0RFZOaHIyU244ZlhJRTAvZmx0UmU1NkR3S0NBUUVBb2VlNmRuMUpuR0RLT3ZOSwowQlppN3Nqa1FkQ0ZrZm5zby92ZE5USkljTzhMaGR1cjVhYVc4NS9Ia1ZPNnJiMVg0UmFOOW1nT3dsZUtVT1hBCkgvYUg1UnFwK0xpYzF2WWIvR3ZSZ3JNWnN3UXUwYXUzeFB5RVFaQU92YzZXUnZKTHAzWURLVUIwRmpKejNPQmcKZ01STGpDT3dxVGJNcG1zUHNBRHJ0enZCU0lxdUJGYWRyWkRJSVNtbEVZczJML25BcERLMFduRTcwY1cxMnovSwpUSXR0Q3lqRzk5WmhyMnBWY2xicGRVT3VpMktyUmplbjNJQWJaNXhMUyt4NmNPcDJseTExbDFoZ3RoWnRwVExKCkxvajJGV2lld3dLUktHVmthaE5RVUpiWHN1UTRUajJ5VWtFWUZrVlhKSnRwbEFGVXhKSHhpWW5MTksrOWY4TFgKcDVRMmdRS0NBUUVBbFR5d1JBMmRDNklyc0JoRUg5dS9qOTZSUlVKOW9mSExxV3RFN002eUducENkTnRBTzRncAorazZONFJSaTluaXVNWjNtR3hNbnpNYm1OMXJqeCtoRnFDQWNYbEVEb1V5b1dBSGlVWEFHSXpnUk5IaHJhRkkvCkdTRGw4Rk8rQ2VUMklaYzlvckErQXlnYkJScXVLTHk4b3VhZFk0TFJxUFkrbVR2TTNNV2RMUTU2VCtHUzlSbGUKTWl1cldXM3pBN3N3MXAvbmZyMkVTdkFjcVRGSDVXS2VMbUxPaCtVcU0wZTN5MVNGQ3lBb0VNdnVvc3dVUXVwYgphL3pyaGVDZE9DaWIrL09XblVyMXlybWVteGlYeDJGWUZCaFp5ckw0S3gxOVM1ZUFkWWRvL2lOYlMyZXJIWjJTClJlUVBvODZVVnVYWWloSGhRVE1wakw1WmtFWjk4Q0VzSVFLQ0FRRUE5Sm02N3hKMlQ3Q0FNYlBDOEFCUkwxbXoKdlUxTnFYVW5IR0U2K0k3RlhXemJaQ3JaeDR4M253dUNGZTJwQkNkdURxckEyMmQ5cytjZnB3L2NDU3AyYkJmMApDbXl1cFhEcUdYb3ZBS1UzcFc1ME54a0lOcFNwZTNvM2EvMmRIOHY5YkovdXRUN2txb09PSzJMNTVQUVY4WDYyCmpOVWs5Z2J3aXJ3WGt3YkNGMDJhS3BhZVhPUG9DcVd1WSt5UTdIRUJrd2h0WER1bWs3bG5GcmpPK0ZjVTE4eGsKSFI4VU5RT2JaNFd2M0o5a0FKR0oxejhtdGlERWdJNGltZW9pbFk4QnJBVDk3Qm1GRHpiMjJyb01oMTRIc2RqbQp6dlB3UWFxT1doL2VjNVpPSXQ0ZlhVZGdRdHhlcTJsbDlRYTNXbC9kd0Q0aFVjK2tSc1JiL0JmRWMxUGQ5dz09Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg=="
+	privateKeyBytes, _ := base64.StdEncoding.DecodeString(b64PrivateKey)
+
+	ts.ghApiOpsProvider = new(mocks.GitHubApiOperationsProvider)
+	ts.appTokenSvc = services.NewAppTokenService(ts.ghApiOpsProvider)
+	ts.appId = "fake-app-id"
+	ts.privateKey = string(privateKeyBytes)
+	ts.now = time.Now()
+}
+
+func (ts *AppTokenServiceTestSuite) TestGetAppToken_IsSuccessful() {
+	wantedInstall := &github.Installation{ID: github.Int64(1)}
+	wantedInstallToken := &github.InstallationToken{Token: github.String("fake-token")}
+	wantedInstallTokenOpts := &github.InstallationTokenOptions{}
+
+	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(
+		wantedInstall,
+		nil,
+		nil,
+	)
+	ts.ghApiOpsProvider.On("CreateInstallationToken", *wantedInstall.ID, wantedInstallTokenOpts).Return(
+		wantedInstallToken,
+		nil,
+		nil,
+	)
+
+	gotAppToken, gotErr := ts.appTokenSvc.GetAppToken()
+
+	ts.Equal(wantedInstallToken.GetToken(), *gotAppToken)
+	ts.Nil(gotErr)
+	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "FindRepositoryInstallation", 1)
+	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "CreateInstallationToken", 1)
+}
+
+func (ts *AppTokenServiceTestSuite) TestGetAppToken_FindRepositoryInstallationError() {
+	wantedErr := errors.New("404 Not Found")
+
+	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(
+		nil,
+		nil,
+		wantedErr,
+	)
+
+	gotAppToken, gotErr := ts.appTokenSvc.GetAppToken()
+
+	ts.Nil(gotAppToken)
+	ts.ErrorIs(wantedErr, gotErr)
+	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "FindRepositoryInstallation", 1)
+	ts.ghApiOpsProvider.AssertNotCalled(ts.T(), "CreateInstallationToken")
+}
+
+func (ts *AppTokenServiceTestSuite) TestGetAppToken_CreateInstallationTokenError() {
+	wantedInstall := &github.Installation{ID: github.Int64(1)}
+	wantedInstallTokenOpts := &github.InstallationTokenOptions{}
+	wantedErr := errors.New("404 Not Found")
+
+	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(
+		wantedInstall,
+		nil,
+		nil,
+	)
+	ts.ghApiOpsProvider.On("CreateInstallationToken", *wantedInstall.ID, wantedInstallTokenOpts).Return(
+		nil,
+		nil,
+		wantedErr,
+	)
+
+	gotAppToken, gotErr := ts.appTokenSvc.GetAppToken()
+
+	ts.Nil(gotAppToken)
+	ts.ErrorIs(wantedErr, gotErr)
+	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "FindRepositoryInstallation", 1)
+	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "CreateInstallationToken", 1)
+}
+
+func (ts *AppTokenServiceTestSuite) TestGenerateJwtToken_IsSuccessful() {
+	token, err := services.GenerateJwtToken(
+		ts.appId,
+		ts.privateKey,
+		ts.now.Add(-30*time.Second).Truncate(time.Second),
+		ts.now.Add(2*time.Minute),
+	)
+
+	ts.NoError(err)
+	ts.NotEmpty(token)
+}

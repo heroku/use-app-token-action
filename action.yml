@@ -22,7 +22,6 @@ runs:
       uses: actions/setup-go@v3
       with:
         go-version-file: go.mod
-      shell: bash
     - name: Build the project
       run: make build
       working-directory: ${{ github.action_path }}

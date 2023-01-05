@@ -10,24 +10,17 @@ on:
 jobs:
   build_test_and_release:
     name: Build, Test, & Release
-    strategy:
-      matrix:
-        node-version: [ 16.x ]
     outputs:
       app_token: ${{ steps.get_app_token.outputs.app_token }}
     runs-on: sfdc-hk-ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Setup Go
+        uses: actions/setup-go@v3
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-          cache-dependency-path: "**/package-lock.json"
-      - name: Install dependencies
-        run: npm ci
+          go-version-file: go.mod
       - name: Run unit tests
-        run: npm run test
+        run: make test
       - name: Generate app token
         id: get_app_token
         uses: ./

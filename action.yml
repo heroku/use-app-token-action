@@ -20,7 +20,7 @@ runs:
   steps:
     - name: Run the action
       id: get_app_token
-      run: bin/main-${{ runner.os }}-${{ runner.arch }}
+      run: ${{ github.action_path }}/bin/main-${{ runner.os }}-${{ runner.arch }}
       working-directory: ${{ github.action_path }}
       env:
         APP_ID: ${{ inputs.app_id }}

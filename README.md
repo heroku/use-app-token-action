@@ -39,4 +39,9 @@ job:
        token: ${{ steps.generate_access_token.outputs.app_token }}
 ```
 
+## Development
+
+Modifications to this project require that the binaries located in the [/bin](bin) directory be compiled and checked in.
+To generate the binaries, run `make clean build`, and check in all changes.
+
 [![Use GitHub App Token](https://github.com/heroku/use-app-token-action/actions/workflows/ci.yaml/badge.svg)](https://github.com/heroku/use-app-token-action/actions/workflows/ci.yaml)

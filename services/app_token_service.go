@@ -19,9 +19,6 @@ type IAppTokenService interface {
 
 //go:generate mockery --name IGitHubApiOperationsProvider --structname GitHubApiOperationsProvider --output ../mocks/services
 type IGitHubApiOperationsProvider interface {
-	GetFullRepoName() string
-	GetOwner() string
-	GetRepo() string
 	FindRepositoryInstallation() (*github.Installation, *github.Response, error)
 	CreateInstallationToken(
 		installationId int64,

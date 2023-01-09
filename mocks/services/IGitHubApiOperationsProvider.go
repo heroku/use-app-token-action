@@ -76,48 +76,6 @@ func (_m *GitHubApiOperationsProvider) FindRepositoryInstallation() (*github.Ins
 	return r0, r1, r2
 }
 
-// GetFullRepoName provides a mock function with given fields:
-func (_m *GitHubApiOperationsProvider) GetFullRepoName() string {
-	ret := _m.Called()
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
-// GetOwner provides a mock function with given fields:
-func (_m *GitHubApiOperationsProvider) GetOwner() string {
-	ret := _m.Called()
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
-// GetRepo provides a mock function with given fields:
-func (_m *GitHubApiOperationsProvider) GetRepo() string {
-	ret := _m.Called()
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
 type mockConstructorTestingTNewGitHubApiOperationsProvider interface {
 	mock.TestingT
 	Cleanup(func())

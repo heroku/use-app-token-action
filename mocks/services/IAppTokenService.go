@@ -9,7 +9,7 @@ type AppTokenService struct {
 	mock.Mock
 }
 
-// GetToken provides a mock function with given fields:
+// GetAppToken provides a mock function with given fields:
 func (_m *AppTokenService) GetAppToken() (*string, error) {
 	ret := _m.Called()
 

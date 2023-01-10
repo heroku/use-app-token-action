@@ -9,6 +9,10 @@ inputs:
   private_key:
     description: GitHub access key
     required: true
+  repository:
+    description: GitHub repository where the app is installed
+    required: false
+    default: ${{ github.repository }}
 
 outputs:
   app_token:
@@ -25,5 +29,5 @@ runs:
       env:
         APP_ID: ${{ inputs.app_id }}
         PRIVATE_KEY: ${{ inputs.private_key }}
-        GITHUB_REPOSITORY: heroku/use-app-token-action
+        GITHUB_REPOSITORY: ${{ inputs.repository }}
       shell: bash

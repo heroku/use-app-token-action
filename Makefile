@@ -17,7 +17,7 @@ clean:
 	rm -rf tmp
 
 build:
-	ruby build.rb
+	ruby build.rb $(ARGS)
 
 test:
 	go test $$(go list ./... | grep -v mocks)

@@ -31,7 +31,7 @@ jobs:
       - name: Run build (generate precompiled binaries)
         run: make build
       - name: Git push binaries
-        if: ${{ github.event_name == 'push' && github.even.pull_request.head.repo.full_name == github.repository }}
+        if: ${{ github.event_name == 'push' || github.even.pull_request.head.repo.full_name == github.repository }}
         env:
           CI_COMMIT_MESSAGE: Continuous Integration Build Artifacts
           CI_GITHUB_AUTHOR: Continuous Integration

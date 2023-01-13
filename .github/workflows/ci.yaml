@@ -32,15 +32,12 @@ jobs:
         run: make build
       - name: Git push binaries
         if: ${{ github.event_name == 'push' || github.even.pull_request.head.repo.full_name == github.repository }}
-        env:
-          CI_COMMIT_MESSAGE: Continuous Integration Build Artifacts
-          CI_GITHUB_AUTHOR: Continuous Integration
         run: |
           git add bin
           git diff-index --quiet HEAD || echo "Pushing updated binary files..."
-          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-          git config --global user.email 'heroku-production-services@salesforce.com'
-          git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}\n\n$(git status --porcelain --untracked-files=no bin)"
+          git config user.name "Continuous Integration"
+          git config user.email 'heroku-production-services@salesforce.com'
+          git commit -a -m "Continuous Integration Build Artifacts\n\n$(git status --porcelain --untracked-files=no bin)"
           git push
       - name: Generate app token
         id: get_app_token

@@ -38,7 +38,13 @@ jobs:
           echo "Pushing changes for updated binary files..."  
           git config user.name "Continuous Integration"
           git config user.email 'heroku-production-services@salesforce.com'
-          git commit -a -m "Continuous Integration Build Artifacts\\n\\n$(git status --porcelain --untracked-files=no bin)"
+          commit_message=$(cat<<EOF
+          Continuous Integration Build Artifacts
+          
+          $(git status --porcelain --untracked-files=no)
+          EOF
+          )
+          git commit -m -a "$commit_message"
           git push
       - name: Generate app token
         id: get_app_token

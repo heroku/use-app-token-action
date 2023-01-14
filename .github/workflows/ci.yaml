@@ -41,10 +41,10 @@ jobs:
           commit_message=$(cat<<EOF
           Continuous Integration Build Artifacts
           
-          $(git status --porcelain --untracked-files=no)
+          $(git status --porcelain --untracked-files=no bin)
           EOF
           )
-          git commit -m -a "$commit_message"
+          git commit -a -m "$commit_message"
           git push
       - name: Generate app token
         id: get_app_token

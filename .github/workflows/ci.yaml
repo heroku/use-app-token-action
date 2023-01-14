@@ -34,7 +34,8 @@ jobs:
         if: ${{ github.event_name == 'push' || github.even.pull_request.head.repo.full_name == github.repository }}
         run: |
           git add bin
-          git diff-index --quiet HEAD || echo "Pushing updated binary files..."
+          git diff-index --quiet HEAD bin && echo "👍 No changes to push!" && exit 0
+          echo "Pushing changes for updated binary files..."  
           git config user.name "Continuous Integration"
           git config user.email 'heroku-production-services@salesforce.com'
           git commit -a -m "Continuous Integration Build Artifacts\\n\\n$(git status --porcelain --untracked-files=no bin)"

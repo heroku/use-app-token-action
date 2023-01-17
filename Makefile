@@ -10,7 +10,6 @@ APP_ID ?=
 PRIVATE_KEY ?=
 GITHUB_REPOSITORY ?=
 
-
 default: clean build
 
 clean:
@@ -20,7 +19,7 @@ build:
 	ruby build.rb $(ARGS)
 
 test:
-	go test $$(go list ./... | grep -v mocks)
+	go test $$(go list ./... | grep -v 'cmd\|_mocks')
 
 run:
-	go run cmd/main.go
+	go run cmd/get-gh-app-token/main.go

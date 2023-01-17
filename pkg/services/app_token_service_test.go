@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/google/go-github/v48/github"
-	mocks "github.com/heroku/use-app-token-action/mocks/services"
-	"github.com/heroku/use-app-token-action/services"
+	mocks "github.com/heroku/use-app-token-action/pkg/_mocks/services"
+	"github.com/heroku/use-app-token-action/pkg/services"
 	"github.com/stretchr/testify/suite"
 	"testing"
 	"time"
@@ -40,14 +40,9 @@ func (ts *AppTokenServiceTestSuite) TestGetAppToken_IsSuccessful() {
 	wantedInstallToken := &github.InstallationToken{Token: github.String("fake-token")}
 	wantedInstallTokenOpts := &github.InstallationTokenOptions{}
 
-	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(
-		wantedInstall,
-		nil,
-		nil,
-	)
+	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(wantedInstall, nil)
 	ts.ghApiOpsProvider.On("CreateInstallationToken", *wantedInstall.ID, wantedInstallTokenOpts).Return(
 		wantedInstallToken,
-		nil,
 		nil,
 	)
 
@@ -62,11 +57,7 @@ func (ts *AppTokenServiceTestSuite) TestGetAppToken_IsSuccessful() {
 func (ts *AppTokenServiceTestSuite) TestGetAppToken_FindRepositoryInstallationError() {
 	wantedErr := errors.New("404 Not Found")
 
-	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(
-		nil,
-		nil,
-		wantedErr,
-	)
+	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(nil, wantedErr)
 
 	gotAppToken, gotErr := ts.appTokenSvc.GetAppToken()
 
@@ -81,13 +72,8 @@ func (ts *AppTokenServiceTestSuite) TestGetAppToken_CreateInstallationTokenError
 	wantedInstallTokenOpts := &github.InstallationTokenOptions{}
 	wantedErr := errors.New("404 Not Found")
 
-	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(
-		wantedInstall,
-		nil,
-		nil,
-	)
+	ts.ghApiOpsProvider.On("FindRepositoryInstallation").Return(wantedInstall, nil)
 	ts.ghApiOpsProvider.On("CreateInstallationToken", *wantedInstall.ID, wantedInstallTokenOpts).Return(
-		nil,
 		nil,
 		wantedErr,
 	)
@@ -98,16 +84,4 @@ func (ts *AppTokenServiceTestSuite) TestGetAppToken_CreateInstallationTokenError
 	ts.ErrorIs(wantedErr, gotErr)
 	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "FindRepositoryInstallation", 1)
 	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "CreateInstallationToken", 1)
-}
-
-func (ts *AppTokenServiceTestSuite) TestGenerateJwtToken_IsSuccessful() {
-	token, err := services.GenerateJwtToken(
-		ts.appId,
-		ts.privateKey,
-		ts.now.Add(-30*time.Second).Truncate(time.Second),
-		ts.now.Add(2*time.Minute),
-	)
-
-	ts.NoError(err)
-	ts.NotEmpty(token)
 }

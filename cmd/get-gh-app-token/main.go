@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/heroku/use-app-token-action/services"
+	"github.com/heroku/use-app-token-action/pkg/services"
 	actions "github.com/sethvargo/go-githubactions"
+	"os"
 )
 
 func main() {
@@ -18,7 +19,10 @@ func main() {
 		actions.Fatalf(err.Error())
 	}
 
-	actions.SetOutput("app_token", *appToken)
+	if _, ok := os.LookupEnv("GITHUB_OUTPUT"); ok {
+		actions.SetOutput("app_token", *appToken)
+	}
+
 	actions.Infof("Token generated successfully: 🔑")
 }
 
@@ -29,7 +33,7 @@ func getAppTokenSvc() (appTokenSvc services.IAppTokenService, err error) {
 		}
 	}()
 
-	ghApiOpsProvider := services.NewGitHubApiOperationsProvider()
+	ghApiOpsProvider := services.NewGitHubApiOperationsProvider(nil)
 	appTokenSvc = services.NewAppTokenService(ghApiOpsProvider)
 
 	return appTokenSvc, err

@@ -44,7 +44,7 @@ FileUtils.rm_rf('tmp')
 build_configs.each do |cfg|
   new_binary_path = "tmp/main-#{cfg[:dest_os_arch]}"
   old_binary_path = "bin/main-#{cfg[:dest_os_arch]}"
-  build_cmd = "#{cfg[:target_os_arch]} go build -ldflags=\"-s -w\" -o #{new_binary_path} cmd/main.go"
+  build_cmd = "#{cfg[:target_os_arch]} go build -ldflags=\"-s -w\" -o #{new_binary_path} cmd/get-gh-app-token/main.go"
 
   puts("Building binary for #{cfg[:dest_os_arch]}")
   build_cmd_result = system(build_cmd)

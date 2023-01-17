@@ -13,7 +13,7 @@ type GitHubApiOperationsProvider struct {
 }
 
 // CreateInstallationToken provides a mock function with given fields: installationId, tokenOptions
-func (_m *GitHubApiOperationsProvider) CreateInstallationToken(installationId int64, tokenOptions *github.InstallationTokenOptions) (*github.InstallationToken, *github.Response, error) {
+func (_m *GitHubApiOperationsProvider) CreateInstallationToken(installationId int64, tokenOptions *github.InstallationTokenOptions) (*github.InstallationToken, error) {
 	ret := _m.Called(installationId, tokenOptions)
 
 	var r0 *github.InstallationToken
@@ -25,27 +25,18 @@ func (_m *GitHubApiOperationsProvider) CreateInstallationToken(installationId in
 		}
 	}
 
-	var r1 *github.Response
-	if rf, ok := ret.Get(1).(func(int64, *github.InstallationTokenOptions) *github.Response); ok {
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64, *github.InstallationTokenOptions) error); ok {
 		r1 = rf(installationId, tokenOptions)
 	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*github.Response)
-		}
+		r1 = ret.Error(1)
 	}
 
-	var r2 error
-	if rf, ok := ret.Get(2).(func(int64, *github.InstallationTokenOptions) error); ok {
-		r2 = rf(installationId, tokenOptions)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
+	return r0, r1
 }
 
 // FindRepositoryInstallation provides a mock function with given fields:
-func (_m *GitHubApiOperationsProvider) FindRepositoryInstallation() (*github.Installation, *github.Response, error) {
+func (_m *GitHubApiOperationsProvider) FindRepositoryInstallation() (*github.Installation, error) {
 	ret := _m.Called()
 
 	var r0 *github.Installation
@@ -57,23 +48,14 @@ func (_m *GitHubApiOperationsProvider) FindRepositoryInstallation() (*github.Ins
 		}
 	}
 
-	var r1 *github.Response
-	if rf, ok := ret.Get(1).(func() *github.Response); ok {
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
 	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*github.Response)
-		}
+		r1 = ret.Error(1)
 	}
 
-	var r2 error
-	if rf, ok := ret.Get(2).(func() error); ok {
-		r2 = rf()
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
+	return r0, r1
 }
 
 type mockConstructorTestingTNewGitHubApiOperationsProvider interface {

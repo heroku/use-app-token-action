@@ -31,7 +31,7 @@ runs:
         macOSX64="darwin-amd64"
         WindowARM64="windows-arm64.exe"
         WindowX64="windows-amd64.exe"
-        current_os="${{runner.os}}${{runner.arch}}"
+        current_os="${{runner.os}}-${{runner.arch}}"
         echo "value=${current_os}" >> $GITHUB_OUTPUT
       shell: bash
     - name: Run the action

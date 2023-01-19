@@ -31,7 +31,8 @@ runs:
         macOSX64="darwin-amd64"
         WindowARM64="windows-arm64.exe"
         WindowX64="windows-amd64.exe"
-        echo "value=${${{runner.os}}}${${{runner.arch}}}" >> $GITHUB_OUTPUT
+        current_os="${{runner.os}}${{runner.arch}}"
+        echo "value=${current_os}" >> $GITHUB_OUTPUT
       shell: bash
     - name: Run the action
       id: get_app_token

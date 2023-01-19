@@ -14,8 +14,7 @@ function process_command() {
       shift # past command argument
       ;;
     *)
-      pprint "${RED}ERROR${RESET}: Unknown command argument $1"
-      pprint
+      echo "ERROR: Unknown command argument $1"
       show_command_help
       return 1
       ;;
@@ -23,6 +22,7 @@ function process_command() {
   done
 
   build
+  return 0
 }
 
 function show_command_help() {
@@ -63,6 +63,7 @@ function build() {
   )
 
   if [[ ${#go_oses[@]} -ne ${#binary_suffixes[@]} ]]; then
+    echo "ERROR: List of oses and binary suffixes are mismatched!"
     exit 1
   fi
 

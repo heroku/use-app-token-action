@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/google/go-github/v48/github"
-	mocks "github.com/heroku/use-app-token-action/pkg/_mocks/services"
-	"github.com/heroku/use-app-token-action/pkg/services"
+	mocks "github.com/heroku/get-app-token/pkg/_mocks/services"
+	"github.com/heroku/get-app-token/pkg/services"
 	"github.com/stretchr/testify/suite"
 	"testing"
 	"time"
@@ -48,7 +48,7 @@ func (ts *AppTokenServiceTestSuite) TestGetAppToken_IsSuccessful() {
 
 	gotAppToken, gotErr := ts.appTokenSvc.GetAppToken()
 
-	ts.Equal(wantedInstallToken.GetToken(), *gotAppToken)
+	ts.Equal(wantedInstallToken.GetToken(), gotAppToken)
 	ts.Nil(gotErr)
 	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "FindRepositoryInstallation", 1)
 	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "CreateInstallationToken", 1)
@@ -61,7 +61,7 @@ func (ts *AppTokenServiceTestSuite) TestGetAppToken_FindRepositoryInstallationEr
 
 	gotAppToken, gotErr := ts.appTokenSvc.GetAppToken()
 
-	ts.Nil(gotAppToken)
+	ts.Equal(gotAppToken, "")
 	ts.ErrorIs(wantedErr, gotErr)
 	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "FindRepositoryInstallation", 1)
 	ts.ghApiOpsProvider.AssertNotCalled(ts.T(), "CreateInstallationToken")
@@ -80,7 +80,7 @@ func (ts *AppTokenServiceTestSuite) TestGetAppToken_CreateInstallationTokenError
 
 	gotAppToken, gotErr := ts.appTokenSvc.GetAppToken()
 
-	ts.Nil(gotAppToken)
+	ts.Equal(gotAppToken, "")
 	ts.ErrorIs(wantedErr, gotErr)
 	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "FindRepositoryInstallation", 1)
 	ts.ghApiOpsProvider.AssertNumberOfCalls(ts.T(), "CreateInstallationToken", 1)

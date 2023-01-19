@@ -22,10 +22,6 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 3
       - name: Run unit tests
         run: make test
       - name: Run build (generate precompiled binaries)

@@ -10,16 +10,14 @@ type AppTokenService struct {
 }
 
 // GetAppToken provides a mock function with given fields:
-func (_m *AppTokenService) GetAppToken() (*string, error) {
+func (_m *AppTokenService) GetAppToken() (string, error) {
 	ret := _m.Called()
 
-	var r0 *string
-	if rf, ok := ret.Get(0).(func() *string); ok {
+	var r0 string
+	if rf, ok := ret.Get(0).(func() string); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*string)
-		}
+		r0 = ret.Get(0).(string)
 	}
 
 	var r1 error

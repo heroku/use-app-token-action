@@ -22,12 +22,24 @@ outputs:
 runs:
   using: composite
   steps:
+    - name: Determine which binary to run
+      id: get_action_binary
+      run: |
+        LinuxARM64="linux-arm64"
+        LinuxX64="linux-amd64"
+        macOSARM64="darwin-arm64"
+        macOSX64="darwin-amd64"
+        WindowARM64="windows-arm64.exe"
+        WindowX64="windows-amd64.exe"
+        echo "value=${${{runner.os}}}${${{runner.arch}}}" >> $GITHUB_OUTPUT
+      shell: bash
     - name: Run the action
       id: get_app_token
-      run: ${{ github.action_path }}/bin/main-${{ runner.os }}-${{ runner.arch }}
+      run: >
+        ${{ github.action_path }}/bin/get-app-token-${{ steps.get_action_binary.value }}
+        for-gh-action
+        --app-id={{ inputs.app_id }}
+        --private-key={{ inputs.private_key }}
+        --repository={{ github.repository }}
       working-directory: ${{ github.action_path }}
-      env:
-        APP_ID: ${{ inputs.app_id }}
-        PRIVATE_KEY: ${{ inputs.private_key }}
-        GITHUB_REPOSITORY: ${{ inputs.repository }}
       shell: bash

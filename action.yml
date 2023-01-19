@@ -37,7 +37,7 @@ runs:
     - name: Run the action
       id: get_app_token
       run: >
-        ${{ github.action_path }}/bin/get-app-token-${{ steps.get_action_binary.value }}
+        ${{ github.action_path }}/bin/get-app-token-${{ steps.get_action_binary.outputs.value }}
         for-gh-action
         --app-id={{ inputs.app_id }}
         --private-key={{ inputs.private_key }}

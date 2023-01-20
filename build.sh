@@ -155,7 +155,9 @@ function move_file() {
 function push_and_tag() {
   local tag="${1}"
 
-  git add bin
+  go mod edit -replace="github.com/heroku/use-app-token-action=github.com/heroku/get-app-token@${tag}"
+
+  git add go.mod bin
   git diff-index --quiet HEAD bin
 
   if [[ $? -ne 0 ]]; then

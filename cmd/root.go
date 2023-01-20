@@ -28,12 +28,12 @@ import (
 	"strings"
 
 	"github.com/heroku/get-app-token/pkg/services"
-	"github.com/heroku/get-app-token/pkg/utils"
+	su "github.com/heroku/get-app-token/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
 // Current application version number
-var version = utils.GetVersion()
+var version = su.GetVersion()
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -124,7 +124,7 @@ func persistentPreRun(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	if utils.IsWhitespaceOrEmpty(&privateKey) && utils.IsWhitespaceOrEmpty(&privateKeyFile) {
+	if su.IsWhitespaceOrEmpty(&privateKey) && su.IsWhitespaceOrEmpty(&privateKeyFile) {
 		if requiredErr := cmd.Root().ValidateRequiredFlags(); requiredErr != nil {
 			errMsg := strings.TrimRight(requiredErr.Error(), "not set")
 
@@ -163,7 +163,7 @@ func getAppTokenSvc(cmd *cobra.Command) (services.IAppTokenService, error) {
 	privateKeyFile, _ := cmd.PersistentFlags().GetString("private-key-file")
 	repository, _ := cmd.PersistentFlags().GetString("repository")
 
-	if utils.IsWhitespaceOrEmpty(&privateKey) && !utils.IsWhitespaceOrEmpty(&privateKeyFile) {
+	if su.IsWhitespaceOrEmpty(&privateKey) && !su.IsWhitespaceOrEmpty(&privateKeyFile) {
 		var pkBytes []byte
 		var err error
 

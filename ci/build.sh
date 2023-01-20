@@ -61,7 +61,9 @@ function build() {
     "windows-amd64.exe"
     "windows-arm64.exe"
   )
-  local version="$(SKIP_TAGGING=true ./ci/version.sh)"
+  local tag="$(get_tag)"
+  local version="-X github.com/heroku/get-app-token/cmd/root.version=v${tag}"
+  local ldflags="-s -w ${version}"
 
   if [[ ${#go_oses[@]} -ne ${#binary_suffixes[@]} ]]; then
     echo "ERROR: List of oses and binary suffixes are mismatched!"
@@ -77,38 +79,39 @@ function build() {
     local binary_suffix="${binary_suffixes[$i]}"
     local new_binary_path="tmp/get-app-token-${binary_suffix}"
     local old_binary_path="bin/get-app-token-${binary_suffix}"
-    local ldflags="-s -w -X github.com/heroku/get-app-token/cmd/root.version=v${version}"
-    local build_cmd="${go_oses[$i]} go build -ldflags='-s -w' -o $new_binary_path"
+    local build_cmd="${go_oses[$i]} go build -ldflags='${ldflags}' -o ${new_binary_path}"
 
-    echo "Building binary for ${binary_suffix}, version ${version}"
+    echo "Building binary for ${binary_suffix}, version ${tag}"
     eval "${build_cmd}"
-
-    if [[ -f ${old_binary_path} ]]; then
-      local new_binary_sha
-      local old_binary_sha
-
-      new_binary_sha="$(get_sha "${new_binary_path}")"
-      old_binary_sha="$(get_sha "${old_binary_path}")"
-
-      if [[ "${new_binary_sha}" == "${old_binary_sha}" ]]; then
-        echo "  Binary for ${binary_suffix} is up to date. 👍"
-      else
-        echo "  Replacing binary for ${binary_suffix} with newer version:"
-        echo "    ✔︎ (new) ${new_binary_sha}"
-        echo "    𐄂 (old) ${old_binary_sha}"
-        move_file "${new_binary_path}" "${old_binary_path}"
-      fi
-    else
-      echo " Adding binary for ${binary_suffix}"
-      move_file "${new_binary_path}" "${old_binary_path}"
-    fi
+    move_file "${new_binary_path}" "${old_binary_path}"
 
     echo "--------------------------------"
   done
 
   echo
+  echo "Push changes to git and tag ${tag}:"
+  push_and_tag "${tag}"
+
+  echo
   printf "🏁 Done!%s" "$([[ -n ${DRY_RUN} ]] && echo " -- DRY RUN!!! (No binaries were updated)")"
   echo
+}
+
+function get_tag() {
+  local branch="git rev-parse --abbrev-ref HEAD"
+  local tag="v${VERSION}"
+
+  if [[ "${branch}" != "main" ]] || [[ "${branch}" == "master" ]]; then
+    prerelease_version="$(date -u +%Y%m%d.%H%M%S)"
+
+    if [[ "${branch}" =~ ^release ]]; then
+      tag="${tag}-release_${prerelease_version}"
+    else
+      tag="${tag}-beta_${prerelease_version}"
+    fi
+  fi
+
+  echo "${tag}"
 }
 
 function get_sha() {
@@ -119,17 +122,63 @@ function get_sha() {
   sha_str="$(sha256sum --binary --tag "${binary_path}")"
   sha="$(echo "${sha_str}" | sed -n -e 's/^.* = //p')"
 
-  echo "$sha"
+  echo "${sha}"
 }
 
 function move_file() {
   local new_binary_path="${1}"
   local old_binary_path="${2}"
 
-  if [[ -z "${DRY_RUN}" ]]; then
-    [[ ! -d  "./bin" ]] && mkdir "./bin"
+  [[ ! -d "./bin" ]] && mkdir "./bin"
 
-    mv -f "${new_binary_path}" "${old_binary_path}"
+  if [[ -f ${old_binary_path} ]]; then
+    local new_binary_sha
+    local old_binary_sha
+
+    new_binary_sha="$(get_sha "${new_binary_path}")"
+    old_binary_sha="$(get_sha "${old_binary_path}")"
+
+    if [[ "${new_binary_sha}" == "${old_binary_sha}" ]]; then
+      echo "  Binary for ${binary_suffix} is up to date. 👍"
+    else
+      echo "  Replacing binary for ${binary_suffix} with newer version:"
+      echo "    ✔︎ (new) ${new_binary_sha}"
+      echo "    𐄂 (old) ${old_binary_sha}"
+      [[ -z "${DRY_RUN}" ]] && mv -f "${new_binary_path}" "${old_binary_path}"
+    fi
+  else
+    echo " Adding binary for ${binary_suffix}"
+    [[ -z "${DRY_RUN}" ]] && mv -f "${new_binary_path}" "${old_binary_path}"
+  fi
+}
+
+function push_and_tag() {
+  local tag="${1}"
+
+  git add bin
+  git diff-index --quiet HEAD bin
+
+  if [[ $? -ne 0 ]]; then
+    file_changes="$(git status --porcelain --untracked-files=no bin)"
+    commit_message="Continuous Integration Build Artifacts\n\n${file_changes}"
+
+    echo "${file_changes}" | sed 's/^/  /'
+
+    if [[ -n "${CI}" ]]; then
+      git config user.name "Continuous Integration"
+      git config user.email 'heroku-production-services@salesforce.com'
+      git commit -a -m "${commit_message}"
+      git push
+    fi
+  else
+    echo "  👍 No binary changes to push!"
+  fi
+
+  # The CI env variable is always set to "true" for GitHub actions
+  # Determins if we're on GitHub and if it's safe to tag and push
+  if [[ -n "${CI}" ]]; then
+    git tag -a ${tag} -m "CI release tag for ${tag}"
+    git push origin ${tag}
   fi
 }
 

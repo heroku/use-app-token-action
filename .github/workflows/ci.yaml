@@ -27,11 +27,6 @@ jobs:
       - name: Run build (generate precompiled binaries and tag)
         if: ${{ github.event_name == 'push' || github.even.pull_request.head.repo.full_name == github.repository }}
         run: make build
-      # - name: Push binaries (if changed)
-      #   if: ${{ github.event_name == 'push' || github.even.pull_request.head.repo.full_name == github.repository }}
-      #   run: make push-binaries
-      # - name: Push tag
-      #   run: make version
       - name: Generate app token
         id: get_app_token
         uses: ./

@@ -19,13 +19,7 @@ clean:
 	rm -rf tmp
 
 build:
-	./ci/build.sh $(ARGS)
-
-push-binaries:
-	./ci/push-binaries.sh $(ARGS)
-
-version:
-	./ci/version.sh $(ARGS)
+	./build.sh $(ARGS)
 
 test:
 	go test $$(go list ./... | grep -v 'cmd\|_mocks')

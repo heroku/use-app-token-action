@@ -24,18 +24,23 @@ package cmd
 
 import (
 	"errors"
+	"os"
+	"strings"
+
 	"github.com/heroku/get-app-token/pkg/services"
 	"github.com/heroku/get-app-token/pkg/utils"
 	"github.com/spf13/cobra"
-	"os"
-	"strings"
 )
+
+// Current application version number
+var version = utils.GetVersion()
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:               "get-app-token app",
 	Short:             "Generate a GitHub app token",
 	Long:              `Generate a GitHub app token and print the value`,
+	Version:           version,
 	PersistentPreRunE: persistentPreRun,
 	RunE:              runLocal,
 }

@@ -5,8 +5,9 @@ Copyright © 2023 NAME HERE heroku-production-services@salesforce.com
 package cmd
 
 import (
-	actions "github.com/sethvargo/go-githubactions"
 	"os"
+
+	actions "github.com/sethvargo/go-githubactions"
 
 	"github.com/spf13/cobra"
 )
@@ -17,7 +18,8 @@ var forGhActionCmd = &cobra.Command{
 	Short: "Generate a GitHub app token for use in a GitHub action",
 	Long: `Generate a GitHub app token for use in a GitHub action and set the GitHub action output,
 "app_token", with the generated value`,
-	RunE: runAction,
+	Version: rootCmd.Version,
+	RunE:    runAction,
 }
 
 func init() {

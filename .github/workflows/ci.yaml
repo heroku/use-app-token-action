@@ -26,22 +26,11 @@ jobs:
         run: make test
       - name: Run build (generate precompiled binaries)
         run: make build
-      - name: Git push binaries
+      - name: Push binaries (if changed)
         if: ${{ github.event_name == 'push' || github.even.pull_request.head.repo.full_name == github.repository }}
-        run: |
-          git add bin
-          git diff-index --quiet HEAD bin && echo "👍 No changes to push!" && exit 0
-          echo "Pushing changes for updated binary files..."  
-          git config user.name "Continuous Integration"
-          git config user.email 'heroku-production-services@salesforce.com'
-          commit_message=$(cat<<EOF
-          Continuous Integration Build Artifacts
-          
-          $(git status --porcelain --untracked-files=no bin)
-          EOF
-          )
-          git commit -a -m "$commit_message"
-          git push
+        run: make push-binaries
+      - name: Push tag
+        run: make version
       - name: Generate app token
         id: get_app_token
         uses: ./

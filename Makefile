@@ -5,6 +5,9 @@ ifneq (,$(wildcard ./.env))
 	export
 endif
 
+# !IMPORTANT Set the application version here
+export VERSION := 0.0.1
+
 # Required for `run`
 APP_ID ?=
 PRIVATE_KEY ?=
@@ -16,10 +19,16 @@ clean:
 	rm -rf tmp
 
 build:
-	./build.sh $(ARGS)
+	./ci/build.sh $(ARGS)
+
+push-binaries:
+	./ci/push-binaries.sh $(ARGS)
+
+version:
+	./ci/version.sh $(ARGS)
 
 test:
 	go test $$(go list ./... | grep -v 'cmd\|_mocks')
 
 run:
-	go run cmd/get-use-app-token-action/main.go
+	go run ./ $(ARGS)

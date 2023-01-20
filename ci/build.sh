@@ -61,6 +61,7 @@ function build() {
     "windows-amd64.exe"
     "windows-arm64.exe"
   )
+  local version="$(SKIP_TAGGING=true ./ci/version.sh)"
 
   if [[ ${#go_oses[@]} -ne ${#binary_suffixes[@]} ]]; then
     echo "ERROR: List of oses and binary suffixes are mismatched!"
@@ -76,7 +77,6 @@ function build() {
     local binary_suffix="${binary_suffixes[$i]}"
     local new_binary_path="tmp/get-app-token-${binary_suffix}"
     local old_binary_path="bin/get-app-token-${binary_suffix}"
-    local version="$(./ci/version.sh)"
     local ldflags="-s -w -X github.com/heroku/get-app-token/cmd/root.version=v${version}"
     local build_cmd="${go_oses[$i]} go build -ldflags='-s -w' -o $new_binary_path"
 

@@ -18,7 +18,9 @@ fi
 
 # CI variable is always set to "true" for GitHub actions
 # This will if we're on GitHub and if it's safe to tag and push
-if [[ -n "${CI}" ]]; then
+echo $CI
+
+if [[ -n "${CI}" ]] && [[ -z "${SKIP_TAGGING}" ]]; then
     git tag -a ${tag} -m "${message}"
     git push origin ${tag}
 fi

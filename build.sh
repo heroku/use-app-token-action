@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2155
 
 PROG_NAME=$(basename "$0")
 
@@ -11,7 +12,12 @@ function process_command() {
       ;;
     -d | --dry-run)
       DRY_RUN="YES"
-      shift # past command argument
+      shift # past argument
+      ;;
+    -v | --version)
+      VERSION="${2}"
+      shift # past argument
+      shift # past value
       ;;
     *)
       echo "ERROR: Unknown command argument $1"
@@ -79,11 +85,11 @@ function build() {
     local binary_suffix="${binary_suffixes[$i]}"
     local new_binary_path="tmp/get-app-token-${binary_suffix}"
     local old_binary_path="bin/get-app-token-${binary_suffix}"
-    local build_cmd="${go_oses[$i]} go build -ldflags='${ldflags}' -o ${new_binary_path}"
+    local build_cmd="${go_oses[$i]} go build -ldflags='${ldflags}' -o ${new_binary_path} ./cmd/get-app-token"
 
     echo "Building binary for ${binary_suffix}, version ${tag}"
     eval "${build_cmd}"
-    move_file "${new_binary_path}" "${old_binary_path}"
+    move_file "${new_binary_path}" "${old_binary_path}" "${binary_suffix}"
 
     echo "--------------------------------"
   done
@@ -102,12 +108,12 @@ function get_tag() {
   local tag="v${VERSION}"
 
   if [[ "${branch}" != "main" ]] || [[ "${branch}" == "master" ]]; then
-    prerelease_version="$(date -u +%Y%m%d.%H%M%S)"
+    local prerelease_version="$(date -u +%Y%m%d.%H%M%S)"
 
     if [[ "${branch}" =~ ^release ]]; then
-      tag="${tag}-release_${prerelease_version}"
+      tag="${tag}-release-${prerelease_version}"
     else
-      tag="${tag}-beta_${prerelease_version}"
+      tag="${tag}-beta-${prerelease_version}"
     fi
   fi
 
@@ -128,6 +134,7 @@ function get_sha() {
 function move_file() {
   local new_binary_path="${1}"
   local old_binary_path="${2}"
+  local binary_suffix="${3}"
 
   [[ ! -d "./bin" ]] && mkdir "./bin"
 
@@ -155,15 +162,18 @@ function move_file() {
 function push_and_tag() {
   local tag="${1}"
 
-  go mod edit -replace="github.com/heroku/use-app-token-action=github.com/heroku/get-app-token@${tag}"
-
-  git add go.mod bin
+  git add bin
   git diff-index --quiet HEAD bin
 
+  # shellcheck disable=SC2001
   if [[ $? -ne 0 ]]; then
-    file_changes="$(git status --porcelain --untracked-files=no bin)"
-    commit_message="Continuous Integration Build Artifacts\n\n${file_changes}"
+    local file_changes
 
+    file_changes="$(git status --porcelain --untracked-files=no bin)"
+    local commit_message="Continuous Integration Build Artifacts\n\n${file_changes}"
+
+    # shellcheck disable=SC2001
+    # Indent the file changes by two spaces
     echo "${file_changes}" | sed 's/^/  /'
 
     if [[ -n "${CI}" ]]; then
@@ -177,10 +187,10 @@ function push_and_tag() {
   fi
 
   # The CI env variable is always set to "true" for GitHub actions
-  # Determins if we're on GitHub and if it's safe to tag and push
+  # Determines if we're on GitHub and if it's safe to tag and push
   if [[ -n "${CI}" ]]; then
-    git tag -a ${tag} -m "CI release tag for ${tag}"
-    git push origin ${tag}
+    git tag -a "${tag}" -m "CI release tag for ${tag}"
+    git push origin "${tag}"
   fi
 }
 

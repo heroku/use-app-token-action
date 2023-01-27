@@ -1,8 +1,8 @@
 /*
-Copyright © 2023 NAME HERE heroku-production-services@salesforce.com
+Copyright © 2023 Heroku PE Developer Experience, heroku-production-services@salesforce.com
 */
 
-package cmd
+package command
 
 import (
 	"os"

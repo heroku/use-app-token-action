@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 package main
 
-import "github.com/heroku/get-app-token/cmd"
+import (
+	"github.com/heroku/use-app-token-action/cmd/get-app-token/command"
+)
 
 func main() {
-	cmd.Execute()
+	command.Execute()
 }

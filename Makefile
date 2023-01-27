@@ -25,4 +25,4 @@ test:
 	go test $$(go list ./... | grep -v 'cmd\|_mocks')
 
 run:
-	go run ./ $(ARGS)
+	go run ./cmd/get-app-token $(ARGS)

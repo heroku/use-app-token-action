@@ -20,15 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package cmd
+package command
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
-	"github.com/heroku/get-app-token/pkg/services"
-	su "github.com/heroku/get-app-token/pkg/utils"
+	"github.com/heroku/use-app-token-action/pkg/services"
+	su "github.com/heroku/use-app-token-action/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -150,12 +151,12 @@ func runLocal(cmd *cobra.Command, _ []string) (err error) {
 		return err
 	}
 
-	println(appToken)
+	fmt.Println(appToken)
 
 	return err
 }
 
-//region Global helper methods
+//<editor-fold desc="Global helper methods">
 
 func getAppTokenSvc(cmd *cobra.Command) (services.IAppTokenService, error) {
 	appId, _ := cmd.PersistentFlags().GetString("app-id")
@@ -194,4 +195,4 @@ func getAppToken(cmd *cobra.Command) (appToken string, err error) {
 	return appToken, err
 }
 
-//endregion
+//</editor-fold>

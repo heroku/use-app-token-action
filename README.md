@@ -70,11 +70,11 @@ job:
    get-app-token --app-id <APP_ID> --private-key-file <PATH_TO_RSA_PRIVATE_KEY> --repository <GH_REPO_WITH INSTALLED_APP>
    ```
 
-### AS a library with other Go apps
+### AS a library withing other Go apps
 
 1. Add the dependency to your application
    ```bash
-    go get github.com/heroku/use-app-token-action/pkg/...
+    go get github.com/heroku/use-app-token-action/pkg/...@v0.0.1
    ```
 2. Use it in your application. For example:
    ```go
@@ -112,13 +112,15 @@ job:
 ## Development
 
 Modifications to this project require that the version number, `VERSION`, in the [Makefile](./Makefile) is updated to
-reflect the scope of the change being applied (follow semantic versioning best practice). For release and feature
-branches, a tag will be generated with a `release` or `beta` suffix followed by the UTC date of the build. This is done
-performed automatically as a part of the CI workflow upon push to the remote, e.g. `v0.0.1-beta-20230127.185110`.
+reflect the scope of the change being applied. Follow semantic versioning best practice.
 
-The generated tag can be used for debugging. Remove release/beta tags when testing is complete. When a PR is merged to
-the `main` branch, binaries are regenerated and tagged as a part of the CI workflow. The tag will be the `VERSION` as
-specified in the [Makefile](./Makefile) (without a suffix).
+For release and feature branches, a tag will be generated with a `release` or `beta` suffix followed by the UTC date of
+the build. This is done performed automatically as a part of the CI workflow upon push to the remote, e.g.
+`v0.0.1-beta-20230127.185110`. The generated tag can be used for debugging. Remove release/beta tags when they're no 
+longer needed.
+
+When a PR is merged to the `main` branch, binaries are regenerated and tagged as a part of the CI workflow. The tag will
+be the `VERSION` as specified in the [Makefile](./Makefile) (without a suffix, e.g. `v0.0.1`).
 
 NOTE: Perform a `git pull` after pushing changes to the remote to keep your development branch up to date with the
 remote branch. This is required as the CI process for all branches (except `main`) uses the current datetime, which will

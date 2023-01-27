@@ -2,10 +2,17 @@
 
 # Use GitHub App Token Action
 
-This action is intended to be used to create and return a GitHub installation access token given a GitHub Apps `app_id`
-and RSA `private_key`.
+This was created to generate a GitHub application token for use in workflows and applications by supplying the app ID,
+the app's RSA private key, and name of the repository where the app is installed. It is intended to be used in 3
+potential ways:
+
+1. As a GitHub action (primary use case)
+2. As a command line application
+3. As a library within other Go apps
 
 ## Usage
+
+### As a GitHub Action
 
 ```yaml
 - uses: heroku/use-app-token-action@main
@@ -51,9 +58,70 @@ job:
        token: ${{ steps.generate_access_token.outputs.app_token }}
 ```
 
+### As a command line application
+
+1. Install the binary to your machine:
+   ```bash
+   go install github.com/heroku/use-app-token-action/cmd/get-app-token@v0.0.1
+   ```
+2. The application will be installed in `${GOPATH}/bin/get-app-token`
+3. Run the command (assuming your `${GOPATH}\bin` folder is on your `${PATH}`):
+   ```bash
+   get-app-token --app-id <APP_ID> --private-key-file <PATH_TO_RSA_PRIVATE_KEY> --repository <GH_REPO_WITH INSTALLED_APP>
+   ```
+
+### AS a library with other Go apps
+
+1. Add the dependency to your application
+   ```bash
+    go get github.com/heroku/use-app-token-action/pkg/...
+   ```
+2. Use it in your application. For example:
+   ```go
+   package main
+   
+   import (
+       "fmt"
+       "os"
+   
+       "github.com/heroku/use-app-token-action/pkg/services"
+   )
+   
+   func main() {
+       appId := "123456"
+       privateKeyFile := "/path/to/the/gh_app_rsa_private_key.pem"
+       privateKeyBytes, _ := os.ReadFile(privateKeyFile)
+       privateKey := string(privateKeyBytes)
+       repository := "heroku/my-go-application"
+   
+       appTokenSvc := services.NewAppTokenService(services.NewGitHubApiOperationsProvider(
+           appId,
+           privateKey,
+           repository,
+       ))
+   
+       token, _ := appTokenSvc.GetAppToken()
+   
+       fmt.Println(token)
+   }
+   ```
+3. NOTE: If you're using this in a long-running application, the token will expire after 10 minutes. However, for a
+   single instance of the `AppTokenService`, subsequent calls to `GetAppToken()` will return the same token as long as
+   it hasn't expired, and returns a new token if it has expired (auto-refresh).
+
 ## Development
 
-Modifications to this project require that the binaries located in the [/bin](bin) directory be compiled and checked in.
-To generate the binaries, run `make clean build`, and check in all changes.
+Modifications to this project require that the version number, `VERSION`, in the [Makefile](./Makefile) is updated to
+reflect the scope of the change being applied (follow semantic versioning best practice). For release and feature
+branches, a tag will be generated with a `release` or `beta` suffix followed by the UTC date of the build. This is done
+performed automatically as a part of the CI workflow upon push to the remote, e.g. `v0.0.1-beta-20230127.185110`.
+
+The generated tag can be used for debugging. Remove release/beta tags when testing is complete. When a PR is merged to
+the `main` branch, binaries are regenerated and tagged as a part of the CI workflow. The tag will be the `VERSION` as
+specified in the [Makefile](./Makefile) (without a suffix).
+
+NOTE: Perform a `git pull` after pushing changes to the remote to keep your development branch up to date with the
+remote branch. This is required as the CI process for all branches (except `main`) uses the current datetime, which will
+cause the process to commit changes and tag the development branch accordingly.
 
 [![Use GitHub App Token](https://github.com/heroku/use-app-token-action/actions/workflows/ci.yaml/badge.svg)](https://github.com/heroku/use-app-token-action/actions/workflows/ci.yaml)

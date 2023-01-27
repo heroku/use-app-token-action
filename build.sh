@@ -70,6 +70,7 @@ function build() {
   local tag="$(get_tag)"
   local version="-X github.com/heroku/get-app-token/cmd/root.version=v${tag}"
   local ldflags="-s -w ${version}"
+  local p_count=$(nproc --all)
 
   if [[ ${#go_oses[@]} -ne ${#binary_suffixes[@]} ]]; then
     echo "ERROR: List of oses and binary suffixes are mismatched!"
@@ -92,6 +93,10 @@ function build() {
     move_file "${new_binary_path}" "${old_binary_path}" "${binary_suffix}"
 
     echo "--------------------------------"
+
+    if [[ $(jobs -r -p | wc -l) -ge ${p_count} ]]; then
+      wait -n
+    fi
   done
 
   echo

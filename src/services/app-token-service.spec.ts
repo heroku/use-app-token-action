@@ -35,6 +35,7 @@ beforeEach(() => {
         ...process.env,
         APP_ID: "123456",
         PRIVATE_KEY: "fake-private-key",
+        INSTALLATION_ID: "totally_fake_gh_installation_token",
         GITHUB_REPOSITORY: "fake-org/fake-github-repository",
     }
 })
@@ -77,7 +78,9 @@ jest.mock("@octokit/auth-app", () => ({
 describe("AppTokenService", () => {
     const appTokenService = new AppTokenService()
 
-    it("should generate a token successfully", async () => {
+    it("should generate a token successfully when an installationId is supplied", async () => {
+        delete process.env.GITHUB_REPOSITORY;
+
         const expectedToken = "totally_fake_gh_installation_token";
         const actual = appTokenService.getToken()
 
@@ -85,14 +88,14 @@ describe("AppTokenService", () => {
         await expect(actual).resolves.toEqual(expectedToken);
     });
 
-    it("should throw when there is no appId, privateKey and repo", async () => {
-        delete process.env.APP_ID;
-        delete process.env.PRIVATE_KEY;
-        delete process.env.GITHUB_REPOSITORY;
+    it("should generate a token successfully when a repository is supplied", async () => {
+        delete process.env.INSTALLATION_ID
 
+        const expectedToken = "totally_fake_gh_installation_token";
         const actual = appTokenService.getToken()
 
-        await expect(actual).rejects.toThrow(new Error("appId, privateKey, and repository are required"));
+        await expect(actual).resolves.not.toThrow();
+        await expect(actual).resolves.toEqual(expectedToken);
     });
 
     it("should throw when there is no appId", async () => {
@@ -100,22 +103,23 @@ describe("AppTokenService", () => {
 
         const actual = appTokenService.getToken()
 
-        await expect(actual).rejects.toThrow(new Error("appId, privateKey, and repository are required"));
+        await expect(actual).rejects.toThrow(new Error("APP_ID is required"));
     });
 
     it("should throw when there is no privateKey", async () => {
-        delete process.env.APP_ID;
+        delete process.env.PRIVATE_KEY
 
         const actual = appTokenService.getToken()
 
-        await expect(actual).rejects.toThrow(new Error("appId, privateKey, and repository are required"));
+        await expect(actual).rejects.toThrow(new Error("PRIVATE_KEY is required"));
     });
 
-    it("should throw when there is no repository", async () => {
-        delete process.env.APP_ID;
+    it("should throw when there is no installationId and repository", async () => {
+        delete process.env.INSTALLATION_ID
+        delete process.env.GITHUB_REPOSITORY
 
         const actual = appTokenService.getToken()
 
-        await expect(actual).rejects.toThrow(new Error("appId, privateKey, and repository are required"));
+        await expect(actual).rejects.toThrow(new Error("INSTALLATION_ID or GITHUB_REPOSITORY is required"));
     });
 });

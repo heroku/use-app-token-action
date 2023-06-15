@@ -1,6 +1,9 @@
 name: Use GitHub App Token
 author: Lennox McKenzie
-description: Creates a new GitHub app token given the supplied app id and private key
+description: >-
+  Creates a new GitHub app token given the supplied app id, private key, 
+  and either the installationId or repository (e.g. heroku/some-repository) where the app is installed.
+  If neither are supplied, it's assumed that the app is installed on the repository where the action is running.
 
 inputs:
   app_id:
@@ -9,6 +12,13 @@ inputs:
   private_key:
     description: GitHub access key
     required: true
+  installation_id:
+    description: GitHub app installation ID
+    required: false
+  repository:
+    description: GitHub repository where the app is installed
+    required: false
+    default: ${{ github.repository }}
 
 outputs:
   app_token:
@@ -35,5 +45,6 @@ runs:
       env:
         APP_ID: ${{ inputs.app_id }}
         PRIVATE_KEY: ${{ inputs.private_key }}
-        GITHUB_REPOSITORY: heroku/use-app-token-action
+        INSTALLATION_ID: inputs.installation_id
+        GITHUB_REPOSITORY: inputs.repository
       shell: bash

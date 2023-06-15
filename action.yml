@@ -45,6 +45,6 @@ runs:
       env:
         APP_ID: ${{ inputs.app_id }}
         PRIVATE_KEY: ${{ inputs.private_key }}
-        INSTALLATION_ID: inputs.installation_id
-        GITHUB_REPOSITORY: inputs.repository
+        INSTALLATION_ID: ${{ inputs.installation_id }}
+        GITHUB_REPOSITORY: ${{ inputs.repository }}
       shell: bash

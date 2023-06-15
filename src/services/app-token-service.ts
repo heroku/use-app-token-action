@@ -22,14 +22,12 @@ export class AppTokenService {
         const auth = createAppAuth({appId, privateKey});
         const {token: jwt} = await auth({type: "app"});
         const installId = await this.getInstallationId(jwt, installationId, repository)
-        console.log(`installId: ${installId}`)
         const {token} = await auth({installationId: installId, type: "installation"});
 
         return token;
     }
 
     private async getInstallationId(jwt: string, installationId: NullableString, repository: NullableString) {
-        console.log(`installationId: ${installationId}`)
         if (installationId) return Number(installationId);
 
         const octokit = github.getOctokit(jwt);

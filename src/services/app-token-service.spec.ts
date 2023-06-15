@@ -13,7 +13,7 @@ const octokitRestMocks = {
         getRepoInstallation: (params: { owner: string, repo: string }) => Promise.resolve({
             status: 200,
             data: {
-                id: "fake_installation_id",
+                id: 99999999999999999999,
             }
         })
     }
@@ -35,7 +35,7 @@ beforeEach(() => {
         ...process.env,
         APP_ID: "123456",
         PRIVATE_KEY: "fake-private-key",
-        INSTALLATION_ID: "totally_fake_gh_installation_token",
+        INSTALLATION_ID: "99999999999999999999",
         GITHUB_REPOSITORY: "fake-org/fake-github-repository",
     }
 })

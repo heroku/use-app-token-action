@@ -173,7 +173,7 @@ function push_and_tag() {
     local file_changes
 
     file_changes="$(git status --porcelain --untracked-files=no bin)"
-    local commit_message="$(printf 'Continuous Integration Build Artifacts\n\n\%s', "${file_changes}")"
+    local commit_message="$(printf 'Continuous Integration Build Artifacts\n\n%s', "${file_changes}")"
 
     # shellcheck disable=SC2001
     # Indent the file changes by two spaces

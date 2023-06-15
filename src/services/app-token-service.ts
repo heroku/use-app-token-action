@@ -29,6 +29,7 @@ export class AppTokenService {
     }
 
     private async getInstallationId(jwt: string, installationId: NullableString, repository: NullableString) {
+        console.log(`installationId: ${installationId}`)
         if (installationId) return Number(installationId);
 
         const octokit = github.getOctokit(jwt);

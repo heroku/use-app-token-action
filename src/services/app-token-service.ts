@@ -22,6 +22,7 @@ export class AppTokenService {
         const auth = createAppAuth({appId, privateKey});
         const {token: jwt} = await auth({type: "app"});
         const installId = await this.getInstallationId(jwt, installationId, repository)
+        console.log(`installId: ${installId}`)
         const {token} = await auth({installationId: installId, type: "installation"});
 
         return token;

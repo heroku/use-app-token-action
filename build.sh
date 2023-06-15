@@ -168,10 +168,8 @@ function push_and_tag() {
   local tag="${1}"
 
   git add bin
-  git diff-index --quiet HEAD bin
 
-  # shellcheck disable=SC2001
-  if [[ $? -ne 0 ]]; then
+  if ! git diff-index --quiet HEAD bin; then
     local file_changes
 
     file_changes="$(git status --porcelain --untracked-files=no bin)"

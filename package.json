@@ -1,7 +1,7 @@
 {
   "name": "use-app-token-action",
   "version": "0.0.1",
-  "description": "Get's a GitHub app installation token using the supplied app id and private key",
+  "description": "Gets a GitHub app installation token using the supplied app id, private key, and installation id or repository name",
   "main": "dist/index.js",
   "files": [
     "dist",
@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "debug": "tsc -p tsconfig.build.json --sourceMap",
-    "build": "ncc build src/index.ts --minify --v8-cache",
+    "build": "ncc build src/index.ts --minify --v8-cache --license licenses.txt",
     "clean": "rm -rf dist coverage",
     "test": "jest"
   },
@@ -19,10 +19,10 @@
   },
   "keywords": [],
   "author": {
-    "name": "Lennox McKenzie",
-    "email": "lmckenzie@salesforce.com"
+    "name": "Heroku PE Developer Experience",
+    "email": "devex+heroku-production-engineering@salesforce.com"
   },
-  "license": "MIT",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/heroku/use-app-token-action/issues"
   },

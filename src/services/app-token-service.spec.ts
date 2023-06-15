@@ -4,9 +4,14 @@ import {
     InstallationAuthOptions,
     StrategyOptions
 } from "@octokit/auth-app";
-import {AppTokenService} from "./app-token-service";
+import {AppTokenService, AppTokenServiceInput} from "./app-token-service";
 
-const env = process.env;
+const input = {
+    appId: "123456",
+    privateKey: "fake-private-key",
+    installationId: "99999999999999999999",
+    repository: "fake-org/fake-github-repository",
+} as AppTokenServiceInput;
 
 const octokitRestMocks = {
     apps: {
@@ -29,21 +34,6 @@ jest.mock("@actions/github", () => ({
     ...jest.requireActual("@actions/github"),
     getOctokit: () => ({rest: octokitRestMocks})
 }));
-
-beforeEach(() => {
-    process.env = {
-        ...process.env,
-        APP_ID: "123456",
-        PRIVATE_KEY: "fake-private-key",
-        INSTALLATION_ID: "99999999999999999999",
-        GITHUB_REPOSITORY: "fake-org/fake-github-repository",
-    }
-})
-
-afterEach(() => {
-    jest.restoreAllMocks();
-    process.env = env
-});
 
 jest.mock("@octokit/auth-app", () => ({
     __esModule: true,
@@ -75,12 +65,20 @@ jest.mock("@octokit/auth-app", () => ({
     }
 }));
 
+beforeEach(() => {
+    input.appId = "123456";
+    input.privateKey = "fake-private-key";
+    input.installationId = "99999999999999999999";
+    input.repository = "fake-org/fake-github-repository";
+});
+
+afterEach(() => jest.restoreAllMocks());
+
 describe("AppTokenService", () => {
-    const appTokenService = new AppTokenService()
-
     it("should generate a token successfully when an installationId is supplied", async () => {
-        delete process.env.GITHUB_REPOSITORY;
+        delete input.repository;
 
+        const appTokenService = new AppTokenService(input);
         const expectedToken = "totally_fake_gh_installation_token";
         const actual = appTokenService.getToken()
 
@@ -89,8 +87,9 @@ describe("AppTokenService", () => {
     });
 
     it("should generate a token successfully when a repository is supplied", async () => {
-        delete process.env.INSTALLATION_ID
+        delete input.installationId
 
+        const appTokenService = new AppTokenService(input);
         const expectedToken = "totally_fake_gh_installation_token";
         const actual = appTokenService.getToken()
 
@@ -99,27 +98,27 @@ describe("AppTokenService", () => {
     });
 
     it("should throw when there is no appId", async () => {
-        delete process.env.APP_ID;
+        input.appId = undefined as unknown as string;
 
-        const actual = appTokenService.getToken()
+        const appTokenService = () => new AppTokenService(input);
 
-        await expect(actual).rejects.toThrow(new Error("APP_ID is required"));
+        await expect(appTokenService).toThrow(new Error("'appId' is required"));
     });
 
     it("should throw when there is no privateKey", async () => {
-        delete process.env.PRIVATE_KEY
+        input.privateKey = undefined as unknown as string;
 
-        const actual = appTokenService.getToken()
+        const appTokenService = () => new AppTokenService(input);
 
-        await expect(actual).rejects.toThrow(new Error("PRIVATE_KEY is required"));
+        await expect(appTokenService).toThrow(new Error("'privateKey' is required"));
     });
 
     it("should throw when there is no installationId and repository", async () => {
-        delete process.env.INSTALLATION_ID
-        delete process.env.GITHUB_REPOSITORY
+        delete input.installationId
+        delete input.repository
 
-        const actual = appTokenService.getToken()
+        const appTokenService = () => new AppTokenService(input);
 
-        await expect(actual).rejects.toThrow(new Error("INSTALLATION_ID or GITHUB_REPOSITORY is required"));
+        await expect(appTokenService).toThrow(new Error("'installationId' or 'repository' is required"));
     });
 });

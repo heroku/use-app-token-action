@@ -25,7 +25,7 @@ jobs:
       - name: Run unit tests
         run: make test
       - name: Run build (generate precompiled binaries and tag)
-        if: ${{ github.event_name == 'push' || github.even.pull_request.head.repo.full_name == github.repository }}
+        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: make build
       - name: Generate app token
         id: get_app_token

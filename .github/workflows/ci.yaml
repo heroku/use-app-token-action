@@ -23,14 +23,13 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: npm run test
-      - name: Rebuild dist
+      - name: Build dist/index.js
         run: npm run build
-      - name: Compare with previous release
-        id: diff
+      - name: Commit dist/index.js
         run: |
           git add dist
           if git diff-index --quiet HEAD dist; then
-            echo "  👍 No binary changes to push!"
+            echo "  👍 No changes to commit!"
             exit 0
           fi
           file_changes="$(git status --porcelain --untracked-files=no bin)"

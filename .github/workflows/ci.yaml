@@ -23,15 +23,6 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: npm run test
-      - name: Generate app token
-        id: get_app_token
-        uses: ./
-        with:
-          app_id: ${{ secrets.HEROKU_STANDARDS_APP_ID }}
-          private_key: ${{ secrets.HEROKU_STANDARDS_APP_PRIVATE_KEY }}
-      - name: Generated token
-        run: |
-          echo "Generated token: ${{ steps.get_app_token.outputs.app_token }}"
       - name: Rebuild dist
         run: npm run build
       - name: Compare with previous release
@@ -49,3 +40,12 @@ jobs:
           git config user.email 'heroku-production-services@salesforce.com'
           git commit -a -m "${commit_message}"
           git push
+      - name: Generate app token
+        id: get_app_token
+        uses: ./
+        with:
+          app_id: ${{ secrets.HEROKU_STANDARDS_APP_ID }}
+          private_key: ${{ secrets.HEROKU_STANDARDS_APP_PRIVATE_KEY }}
+      - name: Generated token
+        run: |
+          echo "Generated token: ${{ steps.get_app_token.outputs.app_token }}"

@@ -1,14 +1,6 @@
 name: Use GitHub App Token
 on:
   push:
-    branches:
-      - "**"
-  pull_request:
-    types:
-      - opened
-      - reopened
-    branches:
-      - main
 
 jobs:
   build_test_and_release:
@@ -40,3 +32,20 @@ jobs:
       - name: Generated token
         run: |
           echo "Generated token: ${{ steps.get_app_token.outputs.app_token }}"
+      - name: Rebuild dist
+        run: npm run build
+      - name: Compare with previous release
+        id: diff
+        run: |
+          git add dist
+          if git diff-index --quiet HEAD dist; then
+            echo "  👍 No binary changes to push!"
+            exit 0
+          fi
+          file_changes="$(git status --porcelain --untracked-files=no bin)"
+          commit_message="$(printf 'Continuous Integration Build Artifacts\n\n%s', "${file_changes}")"
+          echo "${file_changes}" | sed 's/^/  /'
+          git config user.name "Continuous Integration"
+          git config user.email 'heroku-production-services@salesforce.com'
+          git commit -a -m "${commit_message}"
+          git push

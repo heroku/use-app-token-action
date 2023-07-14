@@ -328,4 +328,6 @@ dist
 
 ### Project specific ###
 !dist
+.idea
+tmp
 

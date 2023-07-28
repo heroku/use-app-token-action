@@ -10,7 +10,7 @@ jobs:
         node-version: [ 16.x ]
     outputs:
       app_token: ${{ steps.get_app_token.outputs.app_token }}
-    runs-on: sfdc-hk-ubuntu-latest
+    runs-on: pub-hk-ubuntu-22.04-small
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js ${{ matrix.node-version }}
@@ -23,28 +23,20 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: npm run test
-      - name: Build dist/index.js
+      - name: Build package
         run: npm run build
-      - name: Commit dist/index.js
+      - name: Commit package
         run: |
           git add dist
           if git diff-index --quiet HEAD dist; then
             echo "  👍 No changes to commit!"
             exit 0
           fi
-          file_changes="$(git status --porcelain --untracked-files=no bin)"
+          file_changes="$(git status --porcelain --untracked-files=no dist)"
           commit_message="$(printf 'Continuous Integration Build Artifacts\n\n%s', "${file_changes}")"
           echo "${file_changes}" | sed 's/^/  /'
           git config user.name "Continuous Integration"
           git config user.email 'heroku-production-services@salesforce.com'
           git commit -a -m "${commit_message}"
           git push
-      - name: Generate app token
-        id: get_app_token
-        uses: ./
-        with:
-          app_id: ${{ secrets.HEROKU_STANDARDS_APP_ID }}
-          private_key: ${{ secrets.HEROKU_STANDARDS_APP_PRIVATE_KEY }}
-      - name: Generated token
-        run: |
-          echo "Generated token: ${{ steps.get_app_token.outputs.app_token }}"
+          echo "  ✅ Committed changes!"

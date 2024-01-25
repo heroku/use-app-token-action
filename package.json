@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "debug": "tsc -p tsconfig.build.json --sourceMap",
-    "build": "ncc build src/index.ts -m",
+    "build": "ncc build src/index.ts -s",
     "clean": "rm -rf dist coverage",
     "test": "jest"
   },

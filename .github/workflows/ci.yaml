@@ -1,24 +1,15 @@
 name: Use GitHub App Token
 on:
   push:
-    branches:
-      - "**"
-  pull_request:
-    types:
-      - opened
-      - reopened
-    branches:
-      - main
+  merge_group:
 
 jobs:
   build_test_and_release:
     name: Build, Test, & Release
     strategy:
       matrix:
-        node-version: [ 16.x ]
-    outputs:
-      app_token: ${{ steps.get_app_token.outputs.app_token }}
-    runs-on: sfdc-hk-ubuntu-latest
+        node-version: [ 20.x ]
+    runs-on: pub-hk-ubuntu-22.04-small
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js ${{ matrix.node-version }}
@@ -31,12 +22,3 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: npm run test
-      - name: Generate app token
-        id: get_app_token
-        uses: ./
-        with:
-          app_id: ${{ secrets.HEROKU_STANDARDS_APP_ID }}
-          private_key: ${{ secrets.HEROKU_STANDARDS_APP_PRIVATE_KEY }}
-      - name: Generated token
-        run: |
-          echo "Generated token: ${{ steps.get_app_token.outputs.app_token }}"

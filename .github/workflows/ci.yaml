@@ -7,7 +7,7 @@ jobs:
     name: Build, Test, & Release
     strategy:
       matrix:
-        node-version: [ 16.x ]
+        node-version: [ 20.x ]
     outputs:
       app_token: ${{ steps.get_app_token.outputs.app_token }}
     runs-on: pub-hk-ubuntu-22.04-small

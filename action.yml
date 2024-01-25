@@ -1,7 +1,7 @@
 name: Use GitHub App Token
 author: Heroku PE Developer Experience
 description: >-
-  Creates a new GitHub app token given the supplied app id, private key, 
+  Creates a new GitHub app token given the supplied app id, private key,
   and either the installationId or repository (e.g. heroku/some-repository) where the app is installed.
   If neither are supplied, it's assumed that the app is installed on the repository where the action is running.
 
@@ -25,5 +25,5 @@ outputs:
     description: Generated GitHub app token
 
 runs:
-  using: node16
+  using: node20
   main: dist/index.js

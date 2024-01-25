@@ -2,11 +2,19 @@ import {info, getInput, setFailed, setOutput, setSecret} from "@actions/core";
 import {AppTokenService} from "./services/app-token-service";
 
 (async () => {
+    const appId = getInput("app_id", {required: true});
+    console.log(`appId: ${appId}`);
+    const privateKey = getInput("private_key", {required: true});
+    console.log(`privateKey: ${privateKey}`);
+    const installationId = getInput("installation_id");
+    console.log(`installationId: ${installationId}`);
+    const repository = getInput("repository");
+    console.log(`repository: ${repository}`);
     const appTokenSvc = new AppTokenService({
-        appId: getInput("app_id", {required: true}),
-        privateKey: getInput("private_key", {required: true}),
-        installationId: getInput("installation_id"),
-        repository: getInput("repository")
+        appId,
+        privateKey,
+        installationId,
+        repository
     });
 
     try {

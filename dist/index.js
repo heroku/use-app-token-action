@@ -40747,11 +40747,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(2186);
 const app_token_service_1 = __nccwpck_require__(9095);
 (async () => {
+    const appId = (0, core_1.getInput)("app_id", { required: true });
+    console.log(`appId: ${appId}`);
+    const privateKey = (0, core_1.getInput)("private_key", { required: true });
+    console.log(`privateKey: ${privateKey}`);
+    const installationId = (0, core_1.getInput)("installation_id");
+    console.log(`installationId: ${installationId}`);
+    const repository = (0, core_1.getInput)("repository");
+    console.log(`repository: ${repository}`);
     const appTokenSvc = new app_token_service_1.AppTokenService({
-        appId: (0, core_1.getInput)("app_id", { required: true }),
-        privateKey: (0, core_1.getInput)("private_key", { required: true }),
-        installationId: (0, core_1.getInput)("installation_id"),
-        repository: (0, core_1.getInput)("repository")
+        appId,
+        privateKey,
+        installationId,
+        repository
     });
     try {
         console.info("Starting execution: Use GitHub App Token Action");

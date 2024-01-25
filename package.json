@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "debug": "tsc -p tsconfig.build.json --sourceMap",
-    "build": "ncc build src/index.ts --minify --v8-cache --license licenses.txt",
+    "build": "ncc build src/index.ts -m",
     "clean": "rm -rf dist coverage",
     "test": "jest"
   },

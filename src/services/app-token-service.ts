@@ -7,7 +7,7 @@ type NullableString = string | undefined;
 export type AppTokenServiceInput = {
     appId: string,
     privateKey: string,
-    installationId?: string ,
+    installationId?: string,
     repository?: string
 }
 

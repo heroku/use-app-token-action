@@ -1,6 +1,6 @@
 [![Use GitHub App Token](https://github.com/heroku/use-app-token-action/actions/workflows/ci.yaml/badge.svg)](https://github.com/heroku/use-app-token-action/actions/workflows/ci.yaml)
 
-# Use GitHub App Token Action
+# [⚠️ DEPRECATED] Use GitHub App Token Action
 
 > [!WARNING]
 > Please note that this action is deprecated and will be removed in the future. We recommend using the [actions/create-github-app-token](https://github.com/actions/create-github-app-token) action instead.

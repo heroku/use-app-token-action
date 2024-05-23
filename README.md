@@ -2,6 +2,15 @@
 
 # Use GitHub App Token Action
 
+> [!WARNING]
+> Please note that this action is deprecated and will be removed in the future. We recommend using the [actions/create-github-app-token](https://github.com/actions/create-github-app-token) action instead.
+
+*Everything below the following line is the original README.md content and will continue to be maintained until the action is removed.*
+
+___
+
+## Description
+
 This action is intended to be used to create and return a GitHub installation access token given a GitHub Apps `app_id`
 and RSA `private_key`. Either the `installation_id` or `repository` must be provided to identify the GitHub app installation.
 If neither is provided, the GitHub App installation will be inferred from the repository where the action is running.
@@ -30,7 +39,7 @@ If both are provided, the `installation_id` will be used.
 Returns: `steps.<step_id>.outputs.app_token`
 
 In your workflow YAML file, include this action similar to the following:
-  
+
 ```yaml
 job:
   name: My Job

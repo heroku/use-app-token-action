@@ -24,11 +24,11 @@ jobs:
         run: npm run test
       - name: Run action
         id: get_access_token
-        uses: ./
-        with:
-          app_id: ${{ secrets.HEROKU_ALL_REPO_READ_APP_ID }}
-          private_key: ${{ secrets.HEROKU_ALL_REPO_READ_PRIVATE_KEY }}
-          installation_id: ${{ secrets.HEROKU_ALL_REPO_READ_INSTALLATION_ID }}
+        run: node ./dist/index.js
+        env:
+          INPUT_APP_ID: ${{ secrets.HEROKU_ALL_REPO_READ_APP_ID }}
+          INPUT_PRIVATE_KEY: ${{ secrets.HEROKU_ALL_REPO_READ_PRIVATE_KEY }}
+          INPUT_INSTALLATION_ID: ${{ secrets.HEROKU_ALL_REPO_READ_INSTALLATION_ID }}
       - name: Action successful
         uses: actions/script@v7
         with:

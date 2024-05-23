@@ -26,7 +26,7 @@ jobs:
         id: get_access_token
         uses: ./
         with:
-          app_id: 883187
+          app_id: ${{ secrets.HEROKU_ALL_REPO_READ_APP_ID }}
           private_key: ${{ secrets.HEROKU_ALL_REPO_READ_PRIVATE_KEY }}
           installation_id: ${{ secrets.HEROKU_ALL_REPO_READ_INSTALLATION_ID }}
       - name: Action successful

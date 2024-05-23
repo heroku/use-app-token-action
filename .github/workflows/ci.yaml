@@ -22,3 +22,18 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: npm run test
+      - name: Run action
+        id: get_token
+        uses: ./
+        with:
+          app_id: ${{ secrets.HEROKU_ALL_REPO_READ_APP_ID }}
+          private_key: ${{ secrets.HEROKU_ALL_REPO_READ_PRIVATE_KEY }}
+          installation_id: ${{ secrets.HEROKU_ALL_REPO_READ_INSTALLATION_ID }}
+      - name: Action successful
+        run: |
+          if [[ "${{ steps.get_token.outcome }}" == "success" && ! -z "${{ steps.get_token.outputs.app_token }}" ]]; then
+            echo "✅ App token action successful!";
+          else
+            echo "❌ App token action failed!";
+            exit 1;
+          fi

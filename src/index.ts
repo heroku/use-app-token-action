@@ -1,13 +1,17 @@
-import {info, getInput, setFailed, setOutput, setSecret} from "@actions/core";
-import {AppTokenService} from "./services/app-token-service";
+import { info, getInput, setFailed, setOutput, setSecret } from "@actions/core";
+import { AppTokenService } from "./services/app-token-service";
+import deprecationWarning from "./deprecation-warning";
+
 
 (async () => {
     const appTokenSvc = new AppTokenService({
-        appId: getInput("app_id", {required: true}),
-        privateKey: getInput("private_key", {required: true}),
+        appId: getInput("app_id", { required: true }),
+        privateKey: getInput("private_key", { required: true }),
         installationId: getInput("installation_id"),
         repository: getInput("repository")
     });
+
+    await deprecationWarning();
 
     try {
         console.info("Starting execution: Use GitHub App Token Action");

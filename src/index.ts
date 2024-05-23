@@ -11,7 +11,7 @@ import deprecationWarning from "./deprecation-warning";
         repository: getInput("repository")
     });
 
-    deprecationWarning();
+    await deprecationWarning();
 
     try {
         console.info("Starting execution: Use GitHub App Token Action");

@@ -14,7 +14,7 @@ function dedent(str: string): string {
     return fixedStr;
 }
 
-export default function deprecationWarning() {
+export default async function deprecationWarning() {
     const oldActionName = "heroku/use-app-token-action";
     const oldActionUrl = `https://github.com/${oldActionName}`;
     const newActionName = "actions/create-github-app-token";
@@ -31,5 +31,5 @@ export default function deprecationWarning() {
         `This action is deprecated. Please use the '${newActionName}' action from the GitHub Marketplace instead.`,
         { title: `Deprecation warning: ${oldActionName}` }
     );
-    summary.addRaw(summaryMarkdown, true).write();
+    await summary.addRaw(summaryMarkdown, true).write();
 }

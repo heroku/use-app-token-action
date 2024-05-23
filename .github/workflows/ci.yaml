@@ -30,7 +30,7 @@ jobs:
           private_key: ${{ secrets.HEROKU_ALL_REPO_READ_PRIVATE_KEY }}
           installation_id: ${{ secrets.HEROKU_ALL_REPO_READ_INSTALLATION_ID }}
       - name: Action successful
-        uses: actions/script@v7
+        uses: actions/github-script@v7
         with:
           script: |
             if ${{ steps.get_access_token.outputs.success }} !== "true" || !${{ steps.get_access_token.outputs.app_token }} {

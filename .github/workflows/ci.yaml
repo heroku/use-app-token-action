@@ -33,6 +33,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            if ${{ steps.get_access_token.outputs.success }} !== "true" || !${{ steps.get_access_token.outputs.app_token }} {
+            if "${{ steps.get_access_token.outputs.success }}" !== "true" || !"${{ steps.get_access_token.outputs.app_token }}" {
               core.setFailed('App token action failed');
             }

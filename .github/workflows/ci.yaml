@@ -22,3 +22,16 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: npm run test
+      - name: Run action
+        id: get_access_token
+        uses: ./
+        with:
+          app_id: ${{ secrets.HEROKU_ALL_REPO_READ_APP_ID }}
+          private_key: ${{ secrets.HEROKU_ALL_REPO_READ_PRIVATE_KEY }}
+      - name: Action successful
+        uses: actions/script@v7
+        with:
+          script: |
+            if ${{ steps.get_access_token.outputs.success }} !== "true" || !${{ steps.get_access_token.outputs.app_token }} {
+              core.setFailed('App token action failed');
+            }

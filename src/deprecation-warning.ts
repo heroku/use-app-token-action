@@ -31,5 +31,5 @@ export default function deprecationWarning() {
         `This action is deprecated. Please use the '${newActionName}' action from the GitHub Marketplace instead.`,
         { title: `Deprecation warning: ${oldActionName}` }
     );
-    summary.addRaw(summaryMarkdown);
+    summary.addRaw(summaryMarkdown, true).write();
 }

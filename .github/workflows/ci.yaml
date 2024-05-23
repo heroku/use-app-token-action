@@ -28,7 +28,7 @@ jobs:
         with:
           app_id: ${{ secrets.HEROKU_ALL_REPO_READ_APP_ID }}
           private_key: ${{ secrets.HEROKU_ALL_REPO_READ_PRIVATE_KEY }}
-          repository: ${{ github.repository }}
+          installation_id: ${{ secrets.HEROKU_ALL_REPO_READ_INSTALLATION_ID }}
       - name: Action successful
         uses: actions/script@v7
         with:
